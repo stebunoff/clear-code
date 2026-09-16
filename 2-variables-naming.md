@@ -16,10 +16,13 @@
 Проверил код курса по АСД: иногда использовал index вместо i.
 
 Если обращение к индексу не требуется внутри цикла, использую наглядные имена, например
+```python
 for node in nodes:
     linkedList.add_in_tail(node)
+```
 
 Более выразительное имя уместно было использовать при проходе двумерного массива.
+```python
 row_index = 0
 
 while row_index < rows:
@@ -30,6 +33,7 @@ while row_index < rows:
         column_index += 1
 
     row_index += 1
+```
 
 ## 7.4. Попробуйте найти в своих решениях два-три случая, когда можно использовать пары имён - антонимы.
 1. В курсе по АСД часто использовались head / tail.
@@ -41,17 +45,20 @@ while row_index < rows:
 
 ## 7.5. Всем ли временным переменным в вашем коде присвоены выразительные имена? Найдите несколько случаев, когда временные переменные надо переименовать, и поищите, возможно, от некоторых временных переменных вам получится вообще полностью избавиться.
 1. Чаще всего получается отказаться от булевых перменных, заменив их возвратом результата сравнения. Например, вместо:
+```python
 if user_role == ADMIN:
     has_access = True
 else:
     has_access = False
 
 return has_access
+```
 
 можно просто
 return user_role == ADMIN
 
 2. Лучше использовать более выразительные названия (small_list, big_list) в этом фрагменте кода.
+```python
 def intersection(self, set2: PowerSet) -> PowerSet:
         small = self
         big = set2
@@ -64,3 +71,4 @@ def intersection(self, set2: PowerSet) -> PowerSet:
                 if big.get(value):
                     intersection.put(value)
         return intersection
+```
