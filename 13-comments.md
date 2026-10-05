@@ -1,5 +1,6 @@
 # Урок: Комментарии
 
+## Задание 1
 1. В парсере из-за неудачного нейминга функций им нужен комментарий, чтобы сразу понять, почему их несколько. Например:
 ```js
 // Извлечение моделей из таблицы
@@ -51,6 +52,7 @@ def rebalance_to_left(self):
     for value in right_values:
         self.right.push(value)
 ```
+
 4. Добавил комментарии в текущий рабочий проект, где лучше прописать мотивацию добавления проверок из-за особенностей работы браузера.
 ```js
   // `transitionend` срабатывает для каждого анимируемого свойства и всплывает,
@@ -121,4 +123,139 @@ const onPhoneInputInput = (e) => {
     }
   });
 };
+```
+
+## Задание 2
+1. Магические числа позволяют существенно сократить объём кода, но прочесть намерение без комментария потом очень тяжело.
+Было:
+```js
+// Избежать установки курсора внутри префикса кода страны.
+const onPhoneInputClick = (e) => {
+  if (e.target.selectionStart < 4) {
+    e.preventDefault();
+    e.target.setSelectionRange(3, 3);
+  }
+};
+```
+
+Стало:
+```js
+const COUNTRY_CODE_END_POSITION = 3;
+
+const isCaretInsideCountryCode = (input) => input.selectionStart < COUNTRY_CODE_END_POSITION + 1;
+
+const moveCaretAfterCountryCode = (input) => {
+  input.setSelectionRange(COUNTRY_CODE_END_POSITION, COUNTRY_CODE_END_POSITION);
+};
+
+const onPhoneInputClick = (event) => {
+  const input = event.target;
+
+  if (!isCaretInsideCountryCode(input)) {
+    return;
+  }
+
+  event.preventDefault();
+  moveCaretAfterCountryCode(input);
+};
+```
+
+2. Самый простой случай - когда можно просто поменять имя функции (из примера выше).
+До:
+```js
+// Извлечение моделей из таблицы
+const extractModelsTypeOne = (tableHead, tableBody) => {
+  // тело функции
+}
+```
+
+После:
+```js
+const extractModelsFromTable = (tableHead, tableBody) => {
+  // тело функции
+}
+```
+
+3. Пример выше можно улучшить не добавлением комментария, а рефакторингом.
+Было:
+```js
+const onPhoneInputInput = (e) => {
+  const matrix = ${baseCountryCode}${baseMatrix};
+  const def = matrix.replace(/\D/g, '');
+  let i = 0;
+  let val = e.target.value.replace(/\D/g, '');
+  if (def.length >= val.length) {
+    val = def;
+  }
+  e.target.value = matrix.replace(/./g, (a) => {
+    if (/[_\d]/.test(a) && i < val.length) {
+      return val.charAt(i++);
+    } else if (i >= val.length) {
+      return '';
+    } else {
+      return a;
+    }
+  });
+};
+```
+
+```js
+const formatPhoneByMask = (value) => {
+  const mask = `${baseCountryCode}${baseMatrix}`;
+  const defaultDigits = mask.replace(/\D/g, '');
+  const inputDigits = value.replace(/\D/g, '');
+
+  const digits = inputDigits.length <= defaultDigits.length
+    ? defaultDigits
+    : inputDigits;
+
+  let digitIndex = 0;
+
+  const replaceMaskCharacter = (maskCharacter) => {
+  const isDigitPlaceholder = /[_\d]/.test(maskCharacter);
+
+  if (isDigitPlaceholder && digitIndex < digits.length) {
+    return digits.charAt(digitIndex++);
+  }
+
+  if (digitIndex >= digits.length) {
+    return '';
+  }
+
+  return maskCharacter;
+};
+
+return mask.replace(/./g, replaceMaskCharacter);
+};
+
+const onPhoneInputInput = (event) => {
+event.target.value = formatPhoneByMask(event.target.value);
+};
+```
+
+4. Вынесение в отдельный метод группы инструкций делает понятным намерение и комментарий не нужен:
+Внутри класса:
+```js
+disablePageScroll() {
+  scrollLock.lock();
+  this.smoothScroll.stop();
+}
+
+init() {
+  if (!this.isReady()) return;
+
+  this.disablePageScroll();
+  window.addEventListener('wheel', this.onHeroWheel);
+}
+```
+
+5. Комментарий к regrexp не нужен за счёт корректного имени переменной.
+До (нужно вчитываться, чтобы понять, что ищем):
+```js
+const pattern = document.cookie.match(/(?:^|;\s*)_ym_uid=([^;]+)/)?.[1];
+```
+
+После (понятно, что в куки ищем идентификатор Я.Метрики):
+```js
+const ymUid = document.cookie.match(/(?:^|;\s*)_ym_uid=([^;]+)/)?.[1];
 ```
